@@ -23,8 +23,8 @@ namespace Batch27WebApi.Controllers
             }          
             else
             {
-                Console.WriteLine("Error while creating a new book");
-                return BadRequest();
+               // Console.WriteLine("Error while creating a new book");
+                return BadRequest(new{message = "Error while creating book"});
             }            
         }
 

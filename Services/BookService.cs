@@ -16,49 +16,96 @@ namespace Batch27WebApi.Services
 
         public CreateBookResponseModel CreateBook(BookRequestModel bookRequestModel)
         {
-            
-            var bookExists = _bookRepository.IsExist(b => b.Title == bookRequestModel.Title);
+            var response = new CreateBookResponseModel();
+          
+            try
+            {
 
-            if (bookExists)
+                var bookExists = _bookRepository.IsExist(b => b.Title == bookRequestModel.Title);
+
+                if (bookExists)
+                {
+
+                    response.Message = "Book already exist";
+                }
+            }
+            catch
             {
-                Console.WriteLine("Book already exists.");
-                return null; 
-            }            
-            var newBook = new BookMenu
+                return new CreateBookResponseModel
+                {
+                    Message = response.Message,
+                };
+            }
+
+            try
             {
-                Title = bookRequestModel.Title,
-                Author = bookRequestModel.Author,
-              //  BookCode = bookRequestModel.BookCode
-            };            
-           var create = _bookRepository.CreateBook(newBook);            
-            return new CreateBookResponseModel
+                var newBook = new BookMenu
+                {
+                    Title = bookRequestModel.Title,
+                    Author = bookRequestModel.Author,
+                    //  BookCode = bookRequestModel.BookCode
+                };
+                var create = _bookRepository.CreateBook(newBook);
+                return new CreateBookResponseModel
+                {
+                    Title = create.Title,
+                    Author = create.Author,
+                    BookCode = create.BookCode
+                };
+            }
+              
+            catch
             {
-                Title = create.Title,
-                Author = create.Author,
-                BookCode = create.BookCode                
-            };
+
+                response.Message = $"Error occured while creating a new book - code {bookRequestModel.Title}";
+                response.Status = false;
+            }
+
+            return response;
         }
        
         public BookResponse Delete(string bookCode)
         {
-            var book = _bookRepository.GetBookById(bookCode);
-
-            if (book == null)
+            var response = new BookResponse();
+            BookMenu book = null;
+            try
             {
-                Console.WriteLine("Book not found");
-                return null; 
+                book  = _bookRepository.GetBookById(bookCode);               
             }
-
-            _bookRepository.Delete(book);
-            Console.WriteLine("Deleted successfully");
-
-            return new BookResponse
+            catch
             {
-                Title = book.Title,
-                Author = book.Author,
-                BookCode = book.BookCode,
-                
-            };
+                return new BookResponse
+                {
+                    Message = "An error occured",
+                    Status = false
+                };
+            }
+            if (book is null)
+                return new BookResponse
+                {
+                    Message = $"Book not found. code - {bookCode}"
+                };
+            try
+            {              
+
+                _bookRepository.Delete(book);
+                Console.WriteLine("Deleted successfully");
+
+                return new BookResponse
+                {
+                    Title = book.Title,
+                    Author = book.Author,
+                    BookCode = book.BookCode,
+                    Message ="Successfully deleted.",
+                    Status = true
+                };
+            }
+            catch
+            {
+                response.Message = $"An error occured while deleting the book - code {bookCode}";
+                response.Status = false;
+            }
+            return response;          
         }
 
 

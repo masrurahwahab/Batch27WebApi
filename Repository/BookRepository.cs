@@ -15,11 +15,12 @@ namespace Batch27WebApi.Repository
         {
            var bk = _appDbContext.Books.Add(book);
             _appDbContext.SaveChanges();
+
             return new BookResponse
             {
-               Title = bk.Entity.Title,
-               Author = bk.Entity.Author,
-               BookCode = bk.Entity.BookCode
+                Title = bk.Entity.Title,
+                Author = bk.Entity.Author,
+                BookCode = bk.Entity.BookCode
             };
         }
 
