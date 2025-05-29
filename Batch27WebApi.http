@@ -1,0 +1,6 @@
+@Batch27WebApi_HostAddress = http://localhost:5076
+
+GET {{Batch27WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
